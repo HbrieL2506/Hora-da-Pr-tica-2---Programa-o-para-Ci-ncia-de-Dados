@@ -149,3 +149,32 @@ def renomear_documento(nome_atual, nome_novo):
 
     os.rename(caminho_atual, caminho_novo)
     print(f"'{nome_atual}' renomeado para '{nome_novo}' com sucesso.")
+
+
+def remover_documento(nome_arquivo):
+    """Remove um documento da biblioteca após confirmação do usuário.
+
+    Busca o arquivo em todas as subpastas automaticamente.
+    Pede confirmação antes de deletar para evitar remoções acidentais.
+    """
+    caminho_arquivo = None
+
+    for pasta, subpastas, arquivos in os.walk(PASTA_DOCUMENTOS):
+        if nome_arquivo in arquivos:
+            caminho_arquivo = os.path.join(pasta, nome_arquivo)
+            break
+
+    if caminho_arquivo is None:
+        print(f"Erro: '{nome_arquivo}' não encontrado na biblioteca.")
+        return
+
+    # Mostra onde o arquivo está antes de pedir confirmação
+    print(f"Arquivo encontrado: {caminho_arquivo}")
+    confirmacao = input(f"Tem certeza que deseja remover '{nome_arquivo}'? (s/n): ")
+
+    # Só remove se o usuário digitar exatamente "s"
+    if confirmacao.lower() == "s":
+        os.remove(caminho_arquivo)
+        print(f"'{nome_arquivo}' removido com sucesso.")
+    else:
+        print("Remoção cancelada.")
