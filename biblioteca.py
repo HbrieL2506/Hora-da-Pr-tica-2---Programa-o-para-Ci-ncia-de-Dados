@@ -51,8 +51,9 @@ def extrair_ano(nome_arquivo):
     Retorna o ano como string, ou "Ano desconhecido" se não encontrar.
     """
     # re.search busca o padrão em qualquer posição do texto
-    # \\b marca fronteira de palavra, evita pegar "12023" como "2023"
-    resultado = re.search(r"\b(19\d{2}|20\d{2})\b", nome_arquivo)
+    # (?<!\d) = não precedido por dígito | (?!\d) = não seguido por dígito
+    # Evita capturar "2023" de "12023", e funciona com "_" no nome
+    resultado = re.search(r"(?<!\d)(19\d{2}|20\d{2})(?!\d)", nome_arquivo)
     if resultado:
         return resultado.group(1)  # retorna só o trecho que casou com o padrão
     return "Ano desconhecido"
