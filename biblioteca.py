@@ -118,3 +118,34 @@ def adicionar_documento(caminho_origem):
 
     shutil.copy2(caminho_origem, destino)  # copy2 preserva data de modificação original
     print(f"Documento '{nome_arquivo}' adicionado em documentos/{subpasta}/.")
+
+
+def renomear_documento(nome_atual, nome_novo):
+    """Renomeia um documento dentro da biblioteca.
+
+    Busca o arquivo em todas as subpastas automaticamente.
+    Mantém o arquivo na mesma subpasta após renomear.
+    """
+    caminho_atual = None
+
+    # Percorre toda a biblioteca procurando o arquivo pelo nome
+    for pasta, subpastas, arquivos in os.walk(PASTA_DOCUMENTOS):
+        if nome_atual in arquivos:
+            caminho_atual = os.path.join(pasta, nome_atual)
+            break  # encontrou, não precisa continuar procurando
+
+    if caminho_atual is None:
+        print(f"Erro: '{nome_atual}' não encontrado na biblioteca.")
+        return
+
+    # Monta o caminho de destino na mesma pasta do arquivo original
+    pasta_do_arquivo = os.path.dirname(caminho_atual)
+    caminho_novo = os.path.join(pasta_do_arquivo, nome_novo)
+
+    # Garante que o novo nome não está sendo usado por outro arquivo
+    if os.path.exists(caminho_novo):
+        print(f"Erro: já existe um arquivo chamado '{nome_novo}' nessa pasta.")
+        return
+
+    os.rename(caminho_atual, caminho_novo)
+    print(f"'{nome_atual}' renomeado para '{nome_novo}' com sucesso.")
