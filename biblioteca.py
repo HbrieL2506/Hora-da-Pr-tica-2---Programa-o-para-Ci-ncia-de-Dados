@@ -5,6 +5,7 @@ Biblioteca universitária — manipulação de documentos digitais.
 
 import os
 import re
+import shutil
 
 # Pasta raiz onde todos os documentos ficam armazenados
 PASTA_DOCUMENTOS = "documentos"
@@ -83,3 +84,37 @@ def listar_por_ano():
         print(f"\n[{ano}] — {len(documentos_por_ano[ano])} arquivo(s):")
         for arquivo in sorted(documentos_por_ano[ano]):
             print(f"  - {arquivo}")
+
+
+def adicionar_documento(caminho_origem):
+    """Copia um documento para a subpasta correta da biblioteca.
+
+    Detecta a extensão do arquivo e o coloca em documentos/pdf,
+    documentos/epub ou documentos/outros automaticamente.
+    """
+    # Verifica se o arquivo de origem realmente existe
+    if not os.path.isfile(caminho_origem):
+        print(f"Erro: arquivo '{caminho_origem}' não encontrado.")
+        return
+
+    nome_arquivo = os.path.basename(caminho_origem)  # extrai só o nome: "artigo_2023.pdf"
+    _, extensao = os.path.splitext(nome_arquivo)
+    extensao = extensao.lower()
+
+    # Define em qual subpasta o arquivo deve ir
+    if extensao == ".pdf":
+        subpasta = "pdf"
+    elif extensao == ".epub":
+        subpasta = "epub"
+    else:
+        subpasta = "outros"
+
+    destino = os.path.join(PASTA_DOCUMENTOS, subpasta, nome_arquivo)
+
+    # Evita sobrescrever um arquivo que já existe
+    if os.path.exists(destino):
+        print(f"Aviso: '{nome_arquivo}' já existe em documentos/{subpasta}/.")
+        return
+
+    shutil.copy2(caminho_origem, destino)  # copy2 preserva data de modificação original
+    print(f"Documento '{nome_arquivo}' adicionado em documentos/{subpasta}/.")
