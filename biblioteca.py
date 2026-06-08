@@ -178,3 +178,54 @@ def remover_documento(nome_arquivo):
         print(f"'{nome_arquivo}' removido com sucesso.")
     else:
         print("Remoção cancelada.")
+
+
+# ── Funções de Diretório ──────────────────────────────────────────────────────
+
+def listar_diretorios():
+    """Lista todas as subpastas existentes dentro da biblioteca."""
+    print("\n=== Diretórios da Biblioteca ===")
+
+    # os.listdir retorna nomes de tudo dentro da pasta (arquivos e pastas)
+    for item in sorted(os.listdir(PASTA_DOCUMENTOS)):
+        caminho = os.path.join(PASTA_DOCUMENTOS, item)
+        if os.path.isdir(caminho):  # filtra só as pastas, ignora arquivos soltos
+            total = sum(1 for f in os.listdir(caminho) if not f.startswith("."))
+            print(f"  {item}/  ({total} documento(s))")
+
+
+def criar_diretorio(nome):
+    """Cria uma nova subpasta dentro da biblioteca."""
+    caminho = os.path.join(PASTA_DOCUMENTOS, nome)
+
+    if os.path.exists(caminho):
+        print(f"Erro: o diretório '{nome}' já existe.")
+        return
+
+    os.makedirs(caminho)  # makedirs cria pastas intermediárias se necessário
+    print(f"Diretório '{nome}' criado com sucesso.")
+
+
+def remover_diretorio(nome):
+    """Remove uma subpasta da biblioteca após confirmação.
+
+    Só remove se a pasta estiver vazia, evitando perda acidental de documentos.
+    """
+    caminho = os.path.join(PASTA_DOCUMENTOS, nome)
+
+    if not os.path.isdir(caminho):
+        print(f"Erro: o diretório '{nome}' não existe.")
+        return
+
+    # Conta arquivos reais (ignora .gitkeep e similares)
+    arquivos_reais = [f for f in os.listdir(caminho) if not f.startswith(".")]
+    if arquivos_reais:
+        print(f"Erro: '{nome}' contém {len(arquivos_reais)} documento(s). Remova-os antes.")
+        return
+
+    confirmacao = input(f"Remover o diretório '{nome}'? (s/n): ")
+    if confirmacao.lower() == "s":
+        shutil.rmtree(caminho)  # rmtree remove a pasta e tudo dentro (só .gitkeep aqui)
+        print(f"Diretório '{nome}' removido com sucesso.")
+    else:
+        print("Remoção cancelada.")
